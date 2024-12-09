@@ -1,0 +1,89 @@
+import random
+import time  # Importing time module for animation effect
+
+# List of words categorized by difficulty levels
+word_list = {
+    'easy': ['cat', 'dog', 'mat', 'hat', 'fat'],
+    'casual': ['fire', 'food', 'cube', 'rain', 'crow'],
+    'hard': ['action', 'gaming', 'images', 'ladder', 'cactus']
+}
+
+# Function to display the word with dashes for unguessed letters with animation
+def display_word(word, guessed_letters):
+    display = ''
+    for letter in word:
+        if letter in guessed_letters:
+            display += letter
+        else:
+            display += '-'
+    return display
+
+# Function to prompt the player to guess a letter and validate the input
+def get_guess(guessed_letters):
+    while True:
+        guess = input("Guess a letter: ").lower()
+        if len(guess) != 1:
+            print("Please enter only one letter.")
+        elif not guess.isalpha():
+            print("Please enter a valid letter.")
+        elif guess in guessed_letters:
+            print("You already guessed that letter.")
+        else:
+            return guess
+
+# Function to get difficulty level from the player
+def get_difficulty():
+    while True:
+        difficulty = input("Select difficulty (easy/casual/hard): ").lower()
+        if difficulty in word_list:
+            return difficulty
+        else:
+            print("Invalid difficulty. Please choose 'easy', 'casual', or 'hard'.")
+
+# Function to print with animation effect
+def print_with_delay(text, delay=0.1):
+    for char in text:
+        print(char, end='', flush=True)  # print each character without a newline
+        time.sleep(delay)  # add a delay between characters
+    print()  # to move to the next line after the animation
+
+# Main game loop
+def play_game():
+    print_with_delay("Welcome to 'Guess the Word' game!")
+    difficulty = get_difficulty()  # Get difficulty level from the player
+    word = random.choice(word_list[difficulty])  # Randomly select a word from the chosen difficulty
+    guessed_letters = []  # List to keep track of guessed letters
+    guesses_left = {'easy': 8, 'casual': 6, 'hard': 4}[difficulty]  # Set guesses left based on difficulty
+
+    print_with_delay(f"You have {guesses_left} guesses left to guess the word.")
+
+    # Game loop
+    while guesses_left > 0:
+        print_with_delay("\nCurrent word: " + display_word(word, guessed_letters))
+        print_with_delay("Guessed letters: " + ', '.join(guessed_letters))
+        print_with_delay(f"Guesses left: {guesses_left}")
+        
+        guess = get_guess(guessed_letters)
+        guessed_letters.append(guess)
+        
+        # Check if the guessed letter is in the word
+        if guess in word:
+            print_with_delay(f"Good guess! '{guess}' is in the word.")
+        else:
+            guesses_left -= 1
+            print_with_delay(f"Oops! '{guess}' is not in the word.")
+        
+        # Check if the player has guessed the word
+        if all(letter in guessed_letters for letter in word):
+            print_with_delay(f"Congratulations! You guessed the word: {word}")
+            break
+    else:
+        print_with_delay(f"Game over! The word was: {word}")
+
+    # Ask if the player wants to play again
+    play_again = input("\nDo you want to play again? (yes/no): ").lower()
+    if play_again == 'yes':
+        play_game()
+
+# Start the game
+play_game()
